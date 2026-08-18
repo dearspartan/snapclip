@@ -25,7 +25,6 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          cache: true
 
       - name: Get dependencies
         run: |
@@ -37,15 +36,11 @@ jobs:
           cd mobile
           flutter build apk --release --no-tree-shake-icons
 
-      - name: Rename APK file
-        run: |
-          cp mobile/build/app/outputs/flutter-apk/app-release.apk mobile/SnapClip-Android.apk
-
       - name: Upload Android APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: SnapClip-Android-APK
-          path: mobile/SnapClip-Android.apk
+          path: mobile/build/app/outputs/flutter-apk/app-release.apk
 
   build-windows-exe:
     name: Build Windows Desktop Executable
@@ -61,9 +56,8 @@ jobs:
 
       - name: Install dependencies & PyInstaller
         run: |
-          cd desktop
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r desktop/requirements.txt
           pip install pyinstaller
 
       - name: Build Single-File Windows Executable
