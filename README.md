@@ -8,12 +8,14 @@ Upon tapping a snippet on the phone, SnapClip transmits the text over the local 
 
 ---
 
-## ⚡ Direct Downloads (No Setup Needed)
+## ⚡ 1-Click Pre-compiled Downloads
 
-| Platform | Download Link | Description |
-| :--- | :--- | :--- |
-| 💻 **Windows PC Agent** | [**`SnapClip-Desktop-Agent.exe`**](releases/SnapClip-Desktop-Agent.exe) | 1-Click standalone `.exe` (No Python required) |
-| 📱 **Android App** | [**`SnapClip-Android.apk`**](releases/SnapClip-Android.apk) | Direct `.apk` installer for Android phone |
+No setup, Python, or Flutter installations required! Download the direct binary files from the repo:
+
+| Platform | Direct File Download | File Size | Description |
+| :--- | :--- | :--- | :--- |
+| 📱 **Android Phone App** | [**`SnapClip-Android.apk`**](releases/SnapClip-Android.apk) | 174 MB | Standalone `.apk` installer for Android phone |
+| 💻 **Windows PC Agent** | [**`SnapClip-Desktop-Agent.exe`**](releases/SnapClip-Desktop-Agent.exe) | 28.9 MB | 1-Click standalone `.exe` for Windows PC |
 
 ---
 
