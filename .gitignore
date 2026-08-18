@@ -16,7 +16,6 @@ test_snapclip.db
 build/
 dist/
 *.egg-info/
-*.spec
 
 # Flutter & Dart
 .dart_tool/
