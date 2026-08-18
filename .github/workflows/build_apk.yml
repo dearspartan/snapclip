@@ -25,12 +25,6 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Initialize Flutter Android configuration
-        run: |
-          cd mobile
-          flutter create --platforms=android .
-          sed -i 's/minSdkVersion.*/minSdkVersion 21/g' android/app/build.gradle || true
-
       - name: Get dependencies
         run: |
           cd mobile
