@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Pre-compiled Binaries (APK & EXE)
 
 on:
   push:
@@ -8,11 +8,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-android-apk:
+    name: Build Android APK
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Set up Java JDK
@@ -24,22 +24,55 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.x'
           channel: 'stable'
           cache: true
 
-      - name: Install dependencies
+      - name: Get dependencies
         run: |
           cd mobile
           flutter pub get
 
-      - name: Build APK
+      - name: Build Release APK
         run: |
           cd mobile
-          flutter build apk --release --split-per-abi
+          flutter build apk --release --no-tree-shake-icons
 
-      - name: Upload APK Artifacts
+      - name: Rename APK file
+        run: |
+          cp mobile/build/app/outputs/flutter-apk/app-release.apk mobile/SnapClip-Android.apk
+
+      - name: Upload Android APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: SnapClip-Android-APK
-          path: mobile/build/app/outputs/flutter-apk/*.apk
+          path: mobile/SnapClip-Android.apk
+
+  build-windows-exe:
+    name: Build Windows Desktop Executable
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies & PyInstaller
+        run: |
+          cd desktop
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build Single-File Windows Executable
+        run: |
+          cd desktop
+          pyinstaller --noconfirm snapclip_agent.spec
+
+      - name: Upload Windows Executable Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SnapClip-Windows-Agent-EXE
+          path: desktop/dist/SnapClip-Desktop-Agent.exe
