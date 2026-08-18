@@ -1,0 +1,42 @@
+# Python & Virtual Environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+venv/
+.venv/
+env/
+ENV/
+*.db
+*.sqlite3
+live_test.db
+test_snapclip.db
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.spec
+
+# Flutter & Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+build/
+ephemeral/
+
+# Android
+.gradle/
+local.properties
+*.apk
+*.aab
+
+# IDEs & Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
