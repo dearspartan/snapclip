@@ -42,19 +42,19 @@ class DatabaseHelper {
 
     // Seed default sample snippets for instant speed demo
     await db.insert('snippets', {
-      'id': 'email_001',
-      'name': 'Email',
-      'text': 'user@example.com',
-      'category': 'Personal',
+      'id': 'github_dearspartan',
+      'name': 'GitHub Profile',
+      'text': 'https://github.com/dearspartan',
+      'category': 'Development',
       'favorite': 1,
       'created_at': DateTime.now().toIso8601String(),
       'updated_at': DateTime.now().toIso8601String(),
     });
 
     await db.insert('snippets', {
-      'id': 'github_001',
-      'name': 'GitHub Profile',
-      'text': 'https://github.com/spartan-dev',
+      'id': 'snapclip_repo',
+      'name': 'SnapClip Repository',
+      'text': 'https://github.com/dearspartan/snapclip',
       'category': 'Development',
       'favorite': 1,
       'created_at': DateTime.now().toIso8601String(),

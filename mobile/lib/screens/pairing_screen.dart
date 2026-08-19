@@ -74,7 +74,10 @@ class _PairingScreenState extends State<PairingScreen> with SingleTickerProvider
     }
   }
 
+  bool _isProcessingQr = false;
+
   void _onQrDetected(BarcodeCapture capture) async {
+    if (_isProcessingQr || _isLoading) return;
     final barcode = capture.barcodes.firstOrNull;
     if (barcode == null || barcode.rawValue == null) return;
 
@@ -85,7 +88,11 @@ class _PairingScreenState extends State<PairingScreen> with SingleTickerProvider
       final pin = jsonMap['pin'] as String?;
 
       if (ip != null && pin != null) {
-        setState(() => _isLoading = true);
+        setState(() {
+          _isProcessingQr = true;
+          _isLoading = true;
+        });
+
         final pairingInfo = await widget.pairingService.pairWithPC(
           ipAddress: ip,
           port: port,
@@ -94,10 +101,21 @@ class _PairingScreenState extends State<PairingScreen> with SingleTickerProvider
         );
 
         if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Connected to ${pairingInfo.pcName} successfully!')),
+          );
           Navigator.pop(context, pairingInfo);
         }
       }
-    } catch (_) {}
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isProcessingQr = false;
+          _isLoading = false;
+          _errorMessage = e.toString().replaceAll('Exception: ', '');
+        });
+      }
+    }
   }
 
   @override
