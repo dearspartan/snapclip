@@ -4,6 +4,13 @@ import logging
 import time
 import sys
 import os
+import io
+
+# In PyInstaller windowed/GUI mode, sys.stdout and sys.stderr are None
+if sys.stdout is None:
+    sys.stdout = io.StringIO()
+if sys.stderr is None:
+    sys.stderr = io.StringIO()
 
 # Ensure package imports work regardless of cwd
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -35,7 +42,14 @@ def main():
     app = create_app(db, auth_mgr, clip_mgr, auto_paster)
 
     # Server Thread
-    server_config = uvicorn.Config(app=app, host="0.0.0.0", port=8765, log_level="warning")
+    server_config = uvicorn.Config(
+        app=app,
+        host="0.0.0.0",
+        port=8765,
+        log_level="warning",
+        log_config=None,
+        use_colors=False
+    )
     server = uvicorn.Server(server_config)
 
     def run_server():
