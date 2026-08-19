@@ -3,7 +3,15 @@ import os
 import secrets
 from typing import Optional, Dict, Any
 
-DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "snapclip.db")
+def get_app_data_dir() -> str:
+    appdata = os.environ.get("APPDATA")
+    if not appdata:
+        appdata = os.path.expanduser("~")
+    data_dir = os.path.join(appdata, "SnapClip")
+    os.makedirs(data_dir, exist_ok=True)
+    return data_dir
+
+DB_PATH = os.path.join(get_app_data_dir(), "snapclip.db")
 
 class DatabaseManager:
     def __init__(self, db_path: str = DB_PATH):
