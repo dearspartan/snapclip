@@ -1,6 +1,7 @@
 import json
 import logging
 import asyncio
+from typing import Dict
 from fastapi import WebSocket, WebSocketDisconnect, status
 from app.clipboard.clipboard_manager import ClipboardManager
 from app.clipboard.auto_paste import AutoPaster
@@ -13,7 +14,20 @@ class WebSocketHandler:
         self.auth_manager = auth_manager
         self.clipboard_mgr = clipboard_mgr
         self.auto_paster = auto_paster
-        self.active_connections: list[WebSocket] = []
+        self.active_connections: Dict[str, WebSocket] = {}
+
+    async def disconnect_token(self, token: str):
+        if token in self.active_connections:
+            ws = self.active_connections.pop(token)
+            try:
+                await ws.close(code=status.WS_1000_NORMAL_CLOSURE, reason="Unpaired by user")
+            except Exception:
+                pass
+
+    async def disconnect_all(self):
+        tokens = list(self.active_connections.keys())
+        for token in tokens:
+            await self.disconnect_token(token)
 
     async def handle_connection(self, websocket: WebSocket, token: str):
         # Validate authentication token
@@ -23,7 +37,7 @@ class WebSocketHandler:
             return
 
         await websocket.accept()
-        self.active_connections.append(websocket)
+        self.active_connections[token] = websocket
         logger.info(f"WebSocket client connected. Active clients: {len(self.active_connections)}")
 
         try:
@@ -89,5 +103,5 @@ class WebSocketHandler:
         except Exception as e:
             logger.error(f"WebSocket exception: {e}")
         finally:
-            if websocket in self.active_connections:
-                self.active_connections.remove(websocket)
+            if token in self.active_connections and self.active_connections[token] == websocket:
+                del self.active_connections[token]

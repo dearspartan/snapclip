@@ -64,9 +64,10 @@ def create_app(db: DatabaseManager, auth_mgr: AuthManager, clip_mgr: ClipboardMa
         }
 
     @app.post("/api/unpair")
-    def unpair_device(req: UnpairRequest):
+    async def unpair_device(req: UnpairRequest):
         if req.token:
             db.remove_paired_device(req.token)
+            await ws_handler.disconnect_token(req.token)
         return {
             "status": "ok",
             "message": "Device unpaired successfully"

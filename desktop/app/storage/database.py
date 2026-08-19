@@ -103,7 +103,7 @@ class DatabaseManager:
     def get_paired_devices(self) -> list[Dict[str, Any]]:
         with self.get_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT device_name, paired_at, last_seen FROM paired_devices")
+            cursor.execute("SELECT token, device_name, paired_at, last_seen FROM paired_devices")
             return [dict(row) for row in cursor.fetchall()]
 
     def remove_paired_device(self, token: str):
