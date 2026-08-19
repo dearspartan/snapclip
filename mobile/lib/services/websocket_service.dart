@@ -146,6 +146,7 @@ class WebSocketService {
   }
 
   void disconnect() {
+    _pairingInfo = null;
     _pingTimer?.cancel();
     _reconnectTimer?.cancel();
     _channel?.sink.close();

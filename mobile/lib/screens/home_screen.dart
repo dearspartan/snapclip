@@ -193,6 +193,90 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _handleConnectionBadgeTap() async {
+    if (_pairingInfo == null) {
+      _openPairingScreen();
+      return;
+    }
+
+    final pcName = _pairingInfo!.pcName;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(
+              _connectionStatus == DeviceConnectionStatus.connected
+                  ? Icons.computer_rounded
+                  : Icons.wifi_off_rounded,
+              color: _connectionStatus == DeviceConnectionStatus.connected
+                  ? AppTheme.statusConnected
+                  : Colors.orange,
+            ),
+            const SizedBox(width: 10),
+            Expanded(child: Text(pcName)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('IP Address: ${_pairingInfo!.ipAddress}:${_pairingInfo!.port}'),
+            const SizedBox(height: 6),
+            Text(
+              'Status: ${_connectionStatus == DeviceConnectionStatus.connected ? "Connected" : "Offline / Unreachable"}',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: _connectionStatus == DeviceConnectionStatus.connected
+                    ? AppTheme.statusConnected
+                    : Colors.orange,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Close'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              _openPairingScreen();
+            },
+            child: const Text('Pair New PC'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await _unpairPC();
+            },
+            child: const Text('Disconnect & Unpair'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _unpairPC() async {
+    final pcName = _pairingInfo?.pcName ?? 'PC';
+    await _pairingService.unpair(_pairingInfo);
+    _wsService.disconnect();
+    setState(() {
+      _pairingInfo = null;
+      _connectionStatus = DeviceConnectionStatus.disconnected;
+    });
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Unpaired from $pcName successfully')),
+      );
+    }
+  }
+
   Future<void> _addOrEditSnippet([Snippet? existing]) async {
     final result = await Navigator.push<Snippet>(
       context,
@@ -246,7 +330,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: ConnectionBadge(
               status: _connectionStatus,
               pairingInfo: _pairingInfo,
-              onTap: _openPairingScreen,
+              onTap: _handleConnectionBadgeTap,
             ),
           ),
         ],

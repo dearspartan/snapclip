@@ -35,6 +35,7 @@ class SystemTrayManager:
             pystray.MenuItem(f"● SnapClip Running ({local_ip})", None, enabled=False),
             pystray.Menu.SEPARATOR,
             pystray.MenuItem("Show Pairing Info & QR", self._on_show_ui),
+            pystray.MenuItem("Disconnect / Unpair All Devices", self._on_unpair_all),
             pystray.MenuItem("Start with Windows", self._on_toggle_autostart, checked=lambda item: is_autostart_enabled()),
             pystray.Menu.SEPARATOR,
             pystray.MenuItem("Exit SnapClip", self._on_exit)
@@ -44,6 +45,12 @@ class SystemTrayManager:
         self.icon.run()
 
     def _on_show_ui(self, icon, item):
+        if self.show_ui_callback:
+            self.show_ui_callback()
+
+    def _on_unpair_all(self, icon, item):
+        self.auth_mgr.db.clear_all_paired_devices()
+        self.auth_mgr.db.rotate_pin()
         if self.show_ui_callback:
             self.show_ui_callback()
 

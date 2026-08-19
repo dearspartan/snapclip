@@ -64,7 +64,17 @@ class PairingService {
     }
   }
 
-  Future<void> unpair() async {
+  Future<void> unpair([PairingInfo? info]) async {
+    if (info != null) {
+      try {
+        final url = Uri.parse('http://${info.ipAddress}:${info.port}/api/unpair');
+        await http.post(
+          url,
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'token': info.authToken}),
+        ).timeout(const Duration(seconds: 2));
+      } catch (_) {}
+    }
     await _storage.delete(key: _keyIp);
     await _storage.delete(key: _keyPort);
     await _storage.delete(key: _keyToken);

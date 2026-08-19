@@ -13,6 +13,9 @@ class PairRequest(BaseModel):
     pin: str
     device_name: str
 
+class UnpairRequest(BaseModel):
+    token: str
+
 def create_app(db: DatabaseManager, auth_mgr: AuthManager, clip_mgr: ClipboardManager, paster: AutoPaster) -> FastAPI:
     app = FastAPI(title="SnapClip Desktop Agent", version="1.0.0")
 
@@ -58,6 +61,15 @@ def create_app(db: DatabaseManager, auth_mgr: AuthManager, clip_mgr: ClipboardMa
             "status": "ok",
             "token": token,
             "pc_name": socket.gethostname()
+        }
+
+    @app.post("/api/unpair")
+    def unpair_device(req: UnpairRequest):
+        if req.token:
+            db.remove_paired_device(req.token)
+        return {
+            "status": "ok",
+            "message": "Device unpaired successfully"
         }
 
     @app.websocket("/ws")

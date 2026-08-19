@@ -106,6 +106,18 @@ class DatabaseManager:
             cursor.execute("SELECT device_name, paired_at, last_seen FROM paired_devices")
             return [dict(row) for row in cursor.fetchall()]
 
+    def remove_paired_device(self, token: str):
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM paired_devices WHERE token = ?", (token,))
+            conn.commit()
+
+    def clear_all_paired_devices(self):
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM paired_devices")
+            conn.commit()
+
     def get_config(self, key: str, default: str = "") -> str:
         with self.get_connection() as conn:
             cursor = conn.cursor()
